@@ -6,10 +6,10 @@ public interface TransportListener {
 	
 	public void startListener();
 	
-	public void reStartListener();
-	
-	public void setInMessageListener(NetworkMessageListener listener);
+	public void setMessageListener(NetworkMessageListener listener);
 	
 	public void stopListener();
+	
+	public void sendMessage(String message);
 	
 }

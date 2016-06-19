@@ -15,7 +15,7 @@ public class BootstrapApplication {
 		NetworkMessageListener socketMessageListener = new SocketMessageComponent();
 		
 		TransportListener socketListener = new SocketTransportListener();
-		socketListener.setInMessageListener(socketMessageListener);
+		socketListener.setMessageListener(socketMessageListener);
 		socketListener.startListener();
 		
 		MulticastNetworkComponent component = new MulticastNetworkComponent();

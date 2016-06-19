@@ -29,17 +29,18 @@ public class SocketTransportListener extends Thread implements TransportListener
 	private ByteBuffer readBuff = ByteBuffer.allocate(512);
 	
 	public SocketTransportListener() {
-		try {
-			selector = Selector.open();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 	@Override
 	public void init(String hostAddress, int port) {
 		masterAddress = hostAddress;
 		masterPort = port;
+		try {
+			selector = Selector.open();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -90,7 +91,7 @@ public class SocketTransportListener extends Thread implements TransportListener
 	}
 
 	@Override
-	public void setInMessageListener(NetworkMessageListener l) {
+	public void setMessageListener(NetworkMessageListener l) {
 		this.listener = l;
 	}
 	
@@ -109,8 +110,8 @@ public class SocketTransportListener extends Thread implements TransportListener
 	}
 
 	@Override
-	public void reStartListener() {
-		disConnect();
-		connect();
+	public void sendMessage(String message) {
+		// TODO Auto-generated method stub
+		
 	}
 }
