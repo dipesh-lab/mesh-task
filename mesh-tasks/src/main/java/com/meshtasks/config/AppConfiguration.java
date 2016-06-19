@@ -3,8 +3,6 @@ package com.meshtasks.config;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
-import com.meshtasks.utils.CommonUtils;
 /**
  * This Singleton class will read configuration and provides that configuration related data in application.
  * @author indmistry
@@ -14,7 +12,7 @@ public class AppConfiguration {
 
 	private static AppConfiguration applicationConfiguration = new AppConfiguration();
 	
-	private Properties properties = null;
+	private Properties properties = new Properties();;
 	
 	private AppConfiguration() {
 		loadConfiguration();
@@ -31,11 +29,11 @@ public class AppConfiguration {
 	private void loadConfiguration() {
 		InputStream inStream = null;
 		try {
-			inStream = CommonUtils.class.getClassLoader().getResourceAsStream("configuration.properties");
+			inStream = AppConfiguration.class.getClassLoader().getResourceAsStream("configuration.properties");
 			if ( inStream == null ) return;
-			Properties properties = new Properties();
 			properties.load(inStream);
 		} catch(IOException ioe) {
+			ioe.printStackTrace();
 		} finally {
 			try {
 				if ( inStream != null)

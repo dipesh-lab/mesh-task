@@ -12,7 +12,7 @@ import java.util.Iterator;
 import com.meshtasks.network.listeners.NetworkMessageListener;
 import com.meshtasks.network.listeners.TransportListener;
 
-public class SocketTransportListener extends Thread implements TransportListener {
+public class ServerSocketTransportListener extends Thread implements TransportListener {
 
 	private NetworkMessageListener listener;
 	
@@ -28,7 +28,7 @@ public class SocketTransportListener extends Thread implements TransportListener
 	
 	private ByteBuffer readBuff = ByteBuffer.allocate(512);
 	
-	public SocketTransportListener() {
+	public ServerSocketTransportListener() {
 		
 	}
 
