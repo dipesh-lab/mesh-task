@@ -1,6 +1,6 @@
 package com.meshtasks.network.listeners;
 
-public interface InMessageListener {
+public interface NetworkMessageListener {
 
 	public void messageReceived(String data);
 	

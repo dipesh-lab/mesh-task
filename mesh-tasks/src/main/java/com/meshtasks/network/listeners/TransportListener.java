@@ -8,7 +8,7 @@ public interface TransportListener {
 	
 	public void reStartListener();
 	
-	public void setInMessageListener(InMessageListener listener);
+	public void setInMessageListener(NetworkMessageListener listener);
 	
 	public void stopListener();
 	
