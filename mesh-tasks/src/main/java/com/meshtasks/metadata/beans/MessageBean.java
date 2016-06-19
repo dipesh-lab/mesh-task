@@ -3,17 +3,17 @@ package com.meshtasks.metadata.beans;
 public class MessageBean {
 
 	private String type;
-	private String data;
+	private Object data;
 	public String getType() {
 		return type;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getData() {
+	public Object getData() {
 		return data;
 	}
-	public void setData(String data) {
+	public void setData(Object data) {
 		this.data = data;
 	}
 }

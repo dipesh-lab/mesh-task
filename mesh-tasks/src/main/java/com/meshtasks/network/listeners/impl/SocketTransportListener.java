@@ -9,12 +9,12 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 
-import com.meshtasks.network.listeners.InMessageListener;
+import com.meshtasks.network.listeners.NetworkMessageListener;
 import com.meshtasks.network.listeners.TransportListener;
 
-public class SocketTransportListenerImpl extends Thread implements TransportListener {
+public class SocketTransportListener extends Thread implements TransportListener {
 
-	private InMessageListener listener;
+	private NetworkMessageListener listener;
 	
 	private boolean listen = true;
 	
@@ -28,7 +28,7 @@ public class SocketTransportListenerImpl extends Thread implements TransportList
 	
 	private ByteBuffer readBuff = ByteBuffer.allocate(512);
 	
-	public SocketTransportListenerImpl() {
+	public SocketTransportListener() {
 		try {
 			selector = Selector.open();
 		} catch (IOException e) {
@@ -90,7 +90,7 @@ public class SocketTransportListenerImpl extends Thread implements TransportList
 	}
 
 	@Override
-	public void setInMessageListener(InMessageListener l) {
+	public void setInMessageListener(NetworkMessageListener l) {
 		this.listener = l;
 	}
 	

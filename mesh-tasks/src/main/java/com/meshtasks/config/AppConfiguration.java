@@ -12,7 +12,7 @@ import com.meshtasks.utils.CommonUtils;
  */
 public class AppConfiguration {
 
-	private static AppConfiguration applicationConfiguration;
+	private static AppConfiguration applicationConfiguration = new AppConfiguration();
 	
 	private Properties properties = null;
 	
@@ -21,13 +21,6 @@ public class AppConfiguration {
 	}
 	
 	public static AppConfiguration getInstance() {
-		if (applicationConfiguration == null) {
-			synchronized (AppConfiguration.class) {
-				if (applicationConfiguration == null) {
-					applicationConfiguration = new AppConfiguration();
-				}
-			}
-		}
 		return applicationConfiguration;
 	}
 	
