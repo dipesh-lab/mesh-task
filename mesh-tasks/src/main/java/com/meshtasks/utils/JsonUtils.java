@@ -42,6 +42,16 @@ public class JsonUtils {
     }
     
     /**
+     * Method serialize the given String and create object of given Class type.
+     * @param data
+     * @param valueType
+     * @return T
+     */
+    public static <T> T createObjectFromTree(Object obj, Class<T> valueType) {
+        return createObjectFromJsonData(gsonObject.toJsonTree(obj).toString(), valueType);
+    }
+    
+    /**
      * Method create single element for given Key and its value.
      * @param key
      * @param value

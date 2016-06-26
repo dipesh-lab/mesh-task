@@ -1,8 +1,15 @@
 package com.meshtasks.utils;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Enumeration;
 
@@ -32,7 +39,7 @@ public class CommonUtils {
                 Enumeration<InetAddress> addressEnum = interfaceObject.getInetAddresses();
                 while (cycle && addressEnum.hasMoreElements()) {
                     InetAddress inetAddress = addressEnum.nextElement();
-                    if (inetAddress != null    && inetAddress.getHostAddress().indexOf(".") > 0 ) {
+                    if (inetAddress != null && inetAddress.getHostAddress().indexOf(".") > 0 ) {
                     	ipAddress = inetAddress.getHostAddress();
                     	if ( !ipAddress.equals("127.0.0.1") ) {
                     		cycle=false;
@@ -46,4 +53,46 @@ public class CommonUtils {
         }
         return ipAddress;
     }
+    
+    public static int getSocketPort(int initialPort) {
+    	boolean loop = true;
+    	while ( loop ) {
+    		Socket socket = null;
+    		try {
+    			socket = new Socket(InetAddress.getLocalHost(), initialPort);
+    			initialPort++;
+    		} catch(IOException ioe) {
+    			loop = false;
+    		} finally {
+    			try {
+    				if ( socket!= null && socket.isConnected()) {
+    					socket.close();
+    				}
+    			} catch(IOException e){}
+    		}
+    	}
+    	return initialPort;
+    }
+    
+    public static boolean sendSocketData(String hostAddress, String port, String request) {
+		SocketAddress targetAddress = new InetSocketAddress(hostAddress, Integer.parseInt(port));
+        SocketChannel channel = null;
+        try {
+			channel = SocketChannel.open(targetAddress);
+			//boolean status = channel.finishConnect();
+			//System.out.println("Finit Connect "+status);
+			//if ( status ) {
+				byte[] byteData = Charset.forName("UTF-8").encode(request).array();
+				ByteBuffer header = ByteBuffer.wrap(byteData);
+		        channel.write(header);
+		        return true;
+			//}
+        } catch (IOException e) {
+		} finally {
+			try {
+				if ( channel != null ) channel.close();
+			} catch(IOException ioe){}
+		}
+        return false;
+	}
 }

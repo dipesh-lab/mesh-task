@@ -14,14 +14,14 @@ import com.meshtasks.network.listeners.TransportListener;
  * @author dipeshkumar mistry
  *
  */
-public class NetworkMulticastListener extends Thread implements TransportListener {
+public class MulticastTransportListener extends Thread implements TransportListener {
 	
 	private boolean keepAlive = true;
 	private MulticastSocket serverSocket = null;
 	private InetAddress inetAddress = null;
 	private NetworkMessageListener messageListener = null;
 	
-	public NetworkMulticastListener() {
+	public MulticastTransportListener() {
 		
 	}
 	
@@ -32,15 +32,14 @@ public class NetworkMulticastListener extends Thread implements TransportListene
 	public void run() {
 		try {
 	        byte[] buffer = new byte[1024];
-	        System.out.println("Starting multicast listener");
+	        System.out.println("Multicast Listener started");
 			while ( this.keepAlive ) {
 				DatagramPacket msgPacket = new DatagramPacket(buffer, buffer.length);
                 serverSocket.receive(msgPacket);
                 String message = new String(buffer, 0, buffer.length);
-                System.out.println("Multicast Data\n"+message);
                 buffer = null;
                 buffer = new byte[1024];
-                messageListener.messageReceived(message);
+                messageListener.messageReceived(message, null);
 			}
 		} catch( Exception uhe ) {
 			uhe.printStackTrace();
@@ -76,6 +75,7 @@ public class NetworkMulticastListener extends Thread implements TransportListene
 			inetAddress = InetAddress.getByName(hostAddress);
 			this.serverSocket = new MulticastSocket(port);
 		    this.serverSocket.joinGroup(inetAddress);
+		    System.out.println("Multicast listener metadata. Host "+hostAddress +" Port "+port);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (NumberFormatException e) {
@@ -101,12 +101,10 @@ public class NetworkMulticastListener extends Thread implements TransportListene
 	 */
 	@Override
 	public void sendMessage(String message) {
-		System.out.println("Start message send in network\n"+message);
 	    try {
             byte[] buf = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress, 4444);
             serverSocket.send(packet);
-            System.out.println("Multicast packet sent in network");
         } catch (IOException e) {
             e.printStackTrace();
         }

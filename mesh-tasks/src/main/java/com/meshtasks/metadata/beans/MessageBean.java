@@ -1,5 +1,7 @@
 package com.meshtasks.metadata.beans;
 
+
+
 public class MessageBean {
 
 	private String type;
