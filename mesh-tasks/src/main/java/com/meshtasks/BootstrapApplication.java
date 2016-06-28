@@ -28,7 +28,8 @@ public class BootstrapApplication {
 			*/
 			configuration.setApplicationMode("master");
 			/* Create connection to self to process the tasks */
+			workerNodeComponent.runDataPushThread();
 		}
-		System.out.println("After.  System Mode "+configuration.getApplicationMode());
+		System.out.println("System Mode "+configuration.getApplicationMode());
 	}
 }

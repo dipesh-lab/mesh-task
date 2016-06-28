@@ -75,18 +75,17 @@ public class CommonUtils {
     }
     
     public static boolean sendSocketData(String hostAddress, String port, String request) {
-		SocketAddress targetAddress = new InetSocketAddress(hostAddress, Integer.parseInt(port));
-        SocketChannel channel = null;
+    	SocketAddress targetAddress = new InetSocketAddress(hostAddress, Integer.parseInt(port));
+    	SocketChannel channel = null;
         try {
 			channel = SocketChannel.open(targetAddress);
-			//boolean status = channel.finishConnect();
-			//System.out.println("Finit Connect "+status);
-			//if ( status ) {
+			boolean status = channel.finishConnect();
+			if ( status ) {
 				byte[] byteData = Charset.forName("UTF-8").encode(request).array();
 				ByteBuffer header = ByteBuffer.wrap(byteData);
 		        channel.write(header);
 		        return true;
-			//}
+			}
         } catch (IOException e) {
 		} finally {
 			try {
@@ -95,4 +94,5 @@ public class CommonUtils {
 		}
         return false;
 	}
+
 }

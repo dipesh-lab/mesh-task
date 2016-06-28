@@ -19,6 +19,7 @@ public class SocketNetworkComponent implements NetworkMessageListener {
 	private WorkerNodeComponent workerNodeComponent = null;
 	
 	public SocketNetworkComponent(WorkerNodeComponent component) {
+		workerNodeComponent = component;
 		listener = new SocketTransportListener();
 		int availablePort = CommonUtils.getSocketPort(
 				Integer.parseInt(configuration.getProperty("network.socket.port")));
@@ -31,14 +32,20 @@ public class SocketNetworkComponent implements NetworkMessageListener {
 	@Override
 	public void messageReceived(String data, SocketChannel channel) {
 		if ( CommonUtils.isEmpty(data) ) return;
-		System.out.println("Mode Socket : " + configuration.getApplicationMode() + " : Message Received\n"+data);
 		MessageBean message = JsonUtils.createObjectFromJsonData(data, MessageBean.class);
-		System.out.println("Socket Message Type "+message.getType());
 		if ( message.getType().equals(AppConstants.FIND_MASTER_RES) ) {
+			System.out.println("FIND_MASTER_RES Received");
 			NetworkNodeBean nodeBean = JsonUtils.createObjectFromTree(message.getData(),
 					NetworkNodeBean.class);
-			System.out.println("Socket message received. Master "+nodeBean.getIpAddress()+" : "+nodeBean.getPort());
+			System.out.println("Socket message received. Master "+nodeBean.getIpAddress()+" : "+nodeBean.getPort()+" Is Master? "+nodeBean.isMaster());
 			configuration.setApplicationMode(AppConstants.CLIENT_MODE);
+			/* Master replied with IP and Port.
+			 * Now try to connect to Master node */
+			workerNodeComponent.createWorkerNode(nodeBean);
+		} else if ( message.getType().equals(AppConstants.WORKER_NODE_CON_REQ) ) {
+			NetworkNodeBean nodeBean = JsonUtils.createObjectFromTree(message.getData(),
+					NetworkNodeBean.class);
+			System.out.println("WORKER_NODE_CON_REQ Received");
 			workerNodeComponent.addWorkerNode(nodeBean, channel);
 		}
 	}

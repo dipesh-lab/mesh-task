@@ -46,7 +46,7 @@ public class MulticastNetworkComponent implements NetworkMessageListener {
 	@Override
 	public void messageReceived(String data, SocketChannel channel) {
 		if ( configuration.getApplicationMode() == null ) return;
-		System.out.println("Multicast Mode : "+configuration.getApplicationMode()+ " : Message Received\n"+data);
+		//System.out.println("Multicast Mode : "+configuration.getApplicationMode()+ " : Message Received\n"+data);
 		MessageBean messageBean = JsonUtils.createObjectFromJsonData(data, MessageBean.class);
 		if ( messageBean.getType().equals(AppConstants.FIND_MASTER_REQ) && 
 				configuration.getApplicationMode().equals(AppConstants.MASTER_MODE) ) {
@@ -64,7 +64,7 @@ public class MulticastNetworkComponent implements NetworkMessageListener {
 			messageBean.setType(AppConstants.FIND_MASTER_RES);
 			messageBean.setData(nodeBean);
 			String message = JsonUtils.createJSONDataFromObject(messageBean);
-			boolean status = CommonUtils.sendSocketData(targetHostAddress, targetPort, message);
+			CommonUtils.sendSocketData(targetHostAddress, targetPort, message);
 		}
 	}
 }

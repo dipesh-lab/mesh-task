@@ -54,13 +54,17 @@ public class SocketTransportListener extends Thread implements TransportListener
 			while (listen) {
 				int count = acceptSelector.select();
 	            if (count != 0) {
-	                for (Iterator<SelectionKey> i = acceptSelector
-	                        .selectedKeys().iterator(); i.hasNext();) {
+	                for (Iterator<SelectionKey> i = acceptSelector.selectedKeys().iterator(); i.hasNext();) {
 	
 	                    SelectionKey key = i.next();
-	                    if (key.isAcceptable()) {
-	                    	ServerSocketChannel c = (ServerSocketChannel) key.channel();
-	                        SocketChannel sChannel = c.accept();
+	                    if ( key.isAcceptable() ) {
+							ServerSocketChannel sscNew = (ServerSocketChannel) key.channel();
+							SocketChannel sc = sscNew.accept();
+							sc.configureBlocking(false);
+							// Add the new connection to the selector
+							sc.register(acceptSelector, SelectionKey.OP_READ);
+	                    }else if( key.isReadable() )  {
+	                    	SocketChannel sChannel = (SocketChannel) key.channel();
 	                        String data = readSocketData(sChannel);
 	                        listener.messageReceived(data, sChannel);
 	                    }
@@ -105,7 +109,6 @@ public class SocketTransportListener extends Thread implements TransportListener
             readBuff.flip(); 
             return Charset.forName("UTF-8").decode(readBuff).toString().trim();
         } catch (IOException e) {
-            e.printStackTrace();
         } finally {
         	readBuff.clear();
         }
