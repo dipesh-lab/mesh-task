@@ -2,7 +2,7 @@ package com.meshtasks;
 
 import com.meshtasks.components.MulticastNetworkComponent;
 import com.meshtasks.components.SocketNetworkComponent;
-import com.meshtasks.components.WorkerNodeComponent;
+import com.meshtasks.components.WorkerNodeContainer;
 import com.meshtasks.config.AppConfiguration;
 
 public class BootstrapApplication {
@@ -10,7 +10,7 @@ public class BootstrapApplication {
 	
 	public void start() {
 		
-		WorkerNodeComponent workerNodeComponent = new WorkerNodeComponent();
+		WorkerNodeContainer workerNodeComponent = new WorkerNodeContainer();
 		
 		SocketNetworkComponent socketNetworkComponent = new SocketNetworkComponent(workerNodeComponent);
 		
@@ -28,7 +28,7 @@ public class BootstrapApplication {
 			*/
 			configuration.setApplicationMode("master");
 			/* Create connection to self to process the tasks */
-			workerNodeComponent.runDataPushThread();
+			//workerNodeComponent.runDataPushThread();
 		}
 		System.out.println("System Mode "+configuration.getApplicationMode());
 	}

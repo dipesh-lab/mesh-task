@@ -10,7 +10,6 @@ public class StartMeshNetwork {
 		 * */
 		BootstrapApplication app = new BootstrapApplication();
 		app.start();
-		
 	}
 
 }

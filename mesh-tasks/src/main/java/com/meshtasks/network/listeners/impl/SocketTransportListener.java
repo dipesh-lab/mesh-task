@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import com.meshtasks.network.listeners.NetworkMessageListener;
 import com.meshtasks.network.listeners.TransportListener;
+import com.meshtasks.utils.CommonUtils;
 
 public class SocketTransportListener extends Thread implements TransportListener {
 
@@ -61,12 +62,15 @@ public class SocketTransportListener extends Thread implements TransportListener
 							ServerSocketChannel sscNew = (ServerSocketChannel) key.channel();
 							SocketChannel sc = sscNew.accept();
 							sc.configureBlocking(false);
-							// Add the new connection to the selector
 							sc.register(acceptSelector, SelectionKey.OP_READ);
+							System.out.println("New Acceptable Channel found");
 	                    }else if( key.isReadable() )  {
 	                    	SocketChannel sChannel = (SocketChannel) key.channel();
 	                        String data = readSocketData(sChannel);
-	                        listener.messageReceived(data, sChannel);
+	                        if (!CommonUtils.isEmpty(data)) {
+	                        	System.out.println("New Readable Channel found");
+	                        	listener.messageReceived(data, sChannel);
+	                        }
 	                    }
 	                    i.remove();
 	                }

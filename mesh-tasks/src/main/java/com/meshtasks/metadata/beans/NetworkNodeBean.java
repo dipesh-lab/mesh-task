@@ -24,4 +24,15 @@ public class NetworkNodeBean {
 	public void setPort(String port) {
 		this.port = port;
 	}
+	@Override
+	public boolean equals(Object arg0) {
+		NetworkNodeBean bean = (NetworkNodeBean) arg0;
+		return getIpAddress().equals(bean.getIpAddress()) && getPort().equals(bean.getPort());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getIpAddress().hashCode()+getPort().hashCode();
+	}
+	
 }

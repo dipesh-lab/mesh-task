@@ -1,6 +1,7 @@
 package com.meshtasks.network.listeners.impl;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -9,33 +10,39 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 
 import com.meshtasks.config.AppConfiguration;
-import com.meshtasks.metadata.beans.NetworkNodeBean;
 import com.meshtasks.network.listeners.WorkerMessageListener;
 
-public class WorkerSocketListener implements Runnable {
+public class WorkerNodeConnector extends Thread {
 
 	private SocketChannel channel=null;
-	private NetworkNodeBean nodeBean = null;
-	private boolean listen = true;
 	private ByteBuffer readBuff = ByteBuffer.allocate(512);
 	private final WorkerMessageListener listener;
 	private AppConfiguration configuration = AppConfiguration.getInstance();
+	private boolean connected = false;
 	
-	public WorkerSocketListener(SocketChannel ch, NetworkNodeBean bean, WorkerMessageListener l) {
-		channel = ch;
-		nodeBean = bean;
+	public WorkerNodeConnector(WorkerMessageListener l) {
 		listener = l;
+	}
+	
+	public void init(String hostAddress, String port) {
+		try {
+			channel = SocketChannel.open(new InetSocketAddress(hostAddress, Integer.parseInt(port)));
+			channel.configureBlocking(false);
+			connected = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void run() {
+		if ( !connected ) return;
 		try {
 			Selector selector = Selector.open();
 			channel.register(selector, SelectionKey.OP_READ);
-			System.out.println("App Mode "+ configuration.getApplicationMode() +" Client connect to Master IP Address "+nodeBean.getIpAddress());
-			while (listen) {
-				while (channel.isConnected() && !channel.socket().isClosed()) {
-					selector.selectNow();
+			System.out.println("App Mode "+ configuration.getApplicationMode() +" Reading Channel is created and listening");
+			while (true) {
+				selector.selectNow();
 					Iterator<SelectionKey> keys = selector.selectedKeys()
 							.iterator();
 					while (keys.hasNext()) {
@@ -51,34 +58,14 @@ public class WorkerSocketListener implements Runnable {
 									readBuff.clear();
 								}
 							} catch (IOException ioe) {
-								System.out.println(ioe.getMessage());
 								break;
 							}
 						}
 						keys.remove();
 					}
-
-				}
-				System.out.println("Now Wait for connection");
-				try {
-					Thread.currentThread().sleep(20000);
-				} catch (InterruptedException e) {}
-				System.out.println("Wait OVer for connection");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public boolean sendMessage(String message) {
-		if ( !channel.isConnected() ) return false;
-		try {
-			byte[] byteData = Charset.forName("UTF-8").encode(message).array();
-			ByteBuffer data = ByteBuffer.wrap(byteData);
-			channel.write(data);
-			return true;
-		} catch (IOException e) {}
-		return false;
-	}
-
 }
