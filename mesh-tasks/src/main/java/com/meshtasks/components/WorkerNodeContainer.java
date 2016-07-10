@@ -1,7 +1,5 @@
 package com.meshtasks.components;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +12,7 @@ public class WorkerNodeContainer {
 
 	private final Map<NetworkNodeBean, WorkerNodeComponent> nodeMap;
 	private final WorkerMessageListener workerMessageListener;
+	private WorkerNodeComponent workerComponent = null;
 	
 	public WorkerNodeContainer() {
 		nodeMap = new HashMap<NetworkNodeBean, WorkerNodeComponent>(3, 0.8f);
@@ -24,49 +23,35 @@ public class WorkerNodeContainer {
 	 * Method will be called by MASTER node only.
 	 * @param nodeBean
 	 */
-	public void addWorkerNode(NetworkNodeBean nodeBean, SocketChannel channel) {
+	public void addWorkerNode( NetworkNodeBean nodeBean, SocketChannel channel ) {
 		// Connection request received from client.
-		WorkerNodeComponent component = new WorkerNodeComponent(workerMessageListener);
+		System.out.println("Add Worker Node "+nodeBean.getIpAddress() +" : "+nodeBean.getPort());
+		WorkerNodeComponent component = nodeMap.get(nodeBean);
+		if ( component == null ) {
+			component = new WorkerNodeComponent(workerMessageListener);
+			nodeMap.put(nodeBean, component);
+		}
 		component.setNetworkBean(nodeBean);
 		component.setChannel(channel);
-		nodeMap.put(nodeBean, component);
-		
+		component.stopListener();
 		/* Connect to Client to create Read channel */
+		component.connect();
 	}
 	
 	public void createWorkerNode( NetworkNodeBean nodeBean ) {
-		/*SocketChannel channel = getChannel(nodeBean.getIpAddress(), nodeBean.getPort());
-		workerNodeListener = new WorkerSocketListener(channel, nodeBean, workerMessagelistener);
-		Thread workerThread = new Thread(workerNodeListener);
-		workerThread.start();
-		
-		MessageBean messageBean = new MessageBean();
-		messageBean.setType(AppConstants.WORKER_NODE_CON_REQ);
-		nodeBean.setPort(configuration.getSocketPort()+"");
-		String ipAddress = null;
-		try {
-			ipAddress = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {}
-		nodeBean.setIpAddress(ipAddress);
-		nodeBean.setMaster(false);
-		messageBean.setData(nodeBean);
-		String message = JsonUtils.createJSONDataFromObject(messageBean);
-		System.out.println("Application Mode" + configuration.getApplicationMode() 
-			+ " Create Worker Node JSON\n"+message);
-		
-		workerNodeListener.sendMessage(message);
-		runClientPushThread();*/
+		System.out.println("Create Worker Node");
+		workerComponent = new WorkerNodeComponent(workerMessageListener);
+		workerComponent.setNetworkBean(nodeBean);
+		workerComponent.connect();
 	}
 	
-	private SocketChannel getChannel( String hostAddress, String port ) {
-		SocketChannel channel = null;
-		try {
-			channel = SocketChannel.open(new InetSocketAddress(hostAddress, Integer.parseInt(port)));
-			channel.configureBlocking(false);
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void setWorkerWriter(NetworkNodeBean nodeBean, SocketChannel channel) {
+		System.out.println("setWorkerWriter "+nodeBean.getIpAddress()+" : "+nodeBean.getPort());
+		WorkerNodeComponent component = nodeMap.get(nodeBean);
+		if ( component != null ) {
+			System.out.println("setWorkerWriter updated");
+			component.setChannel(channel);
 		}
-		return channel;
 	}
-	
+
 }

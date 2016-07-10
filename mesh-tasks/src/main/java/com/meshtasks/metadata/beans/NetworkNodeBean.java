@@ -24,6 +24,7 @@ public class NetworkNodeBean {
 	public void setPort(String port) {
 		this.port = port;
 	}
+	
 	@Override
 	public boolean equals(Object arg0) {
 		NetworkNodeBean bean = (NetworkNodeBean) arg0;
@@ -32,7 +33,13 @@ public class NetworkNodeBean {
 	
 	@Override
 	public int hashCode() {
-		return getIpAddress().hashCode()+getPort().hashCode();
+		String[] parts = getIpAddress().split("\\.");
+		int part1 = Integer.parseInt(parts[0]);
+		int part2 = Integer.parseInt(parts[1]);
+		int part3 = Integer.parseInt(parts[2]);
+		int part4 = Integer.parseInt(parts[3]);
+		int portInt = Integer.parseInt(getPort());
+		int total = (part1+part2+part3+part4) * portInt;
+		return total;
 	}
-	
 }

@@ -14,4 +14,5 @@ public interface NodeComponent {
 	
 	public void setChannel(SocketChannel channel);
 	
+	public void stopListener();
 }

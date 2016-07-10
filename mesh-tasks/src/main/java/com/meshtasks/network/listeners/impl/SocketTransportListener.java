@@ -7,9 +7,9 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 import java.util.Iterator;
 
+import com.meshtasks.constants.AppConstants;
 import com.meshtasks.network.listeners.NetworkMessageListener;
 import com.meshtasks.network.listeners.TransportListener;
 import com.meshtasks.utils.CommonUtils;
@@ -51,7 +51,6 @@ public class SocketTransportListener extends Thread implements TransportListener
 		try {
 			Selector acceptSelector = Selector.open();
 			serverSocket.register(acceptSelector, SelectionKey.OP_ACCEPT);
-			System.out.println("Socket Listener started");
 			while (listen) {
 				int count = acceptSelector.select();
 	            if (count != 0) {
@@ -63,12 +62,10 @@ public class SocketTransportListener extends Thread implements TransportListener
 							SocketChannel sc = sscNew.accept();
 							sc.configureBlocking(false);
 							sc.register(acceptSelector, SelectionKey.OP_READ);
-							System.out.println("New Acceptable Channel found");
 	                    }else if( key.isReadable() )  {
 	                    	SocketChannel sChannel = (SocketChannel) key.channel();
 	                        String data = readSocketData(sChannel);
 	                        if (!CommonUtils.isEmpty(data)) {
-	                        	System.out.println("New Readable Channel found");
 	                        	listener.messageReceived(data, sChannel);
 	                        }
 	                    }
@@ -111,7 +108,7 @@ public class SocketTransportListener extends Thread implements TransportListener
         try {
             c.read(readBuff);
             readBuff.flip(); 
-            return Charset.forName("UTF-8").decode(readBuff).toString().trim();
+            return AppConstants.SOCKET_CHAR_SET.decode(readBuff).toString().trim();
         } catch (IOException e) {
         } finally {
         	readBuff.clear();
@@ -121,7 +118,6 @@ public class SocketTransportListener extends Thread implements TransportListener
 
 	@Override
 	public void sendMessage(String message) {
-		// TODO Auto-generated method stub
-		
+		throw new RuntimeException("Socket Transport. SendMessage not implemented");
 	}
 }

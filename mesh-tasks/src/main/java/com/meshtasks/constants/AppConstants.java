@@ -10,6 +10,8 @@ public class AppConstants {
 	
 	public static final String WORKER_NODE_CON_REQ = "nodeConReq";
 	
+	public static final String WORKER_NODE_CON_RES = "nodeConRes";
+	
 	public static final String MASTER_MODE = "master";
 	
 	public static final String CLIENT_MODE = "client";

@@ -3,8 +3,8 @@ package com.meshtasks.components;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 
+import com.meshtasks.constants.AppConstants;
 import com.meshtasks.metadata.beans.NetworkNodeBean;
 import com.meshtasks.network.listeners.WorkerMessageListener;
 import com.meshtasks.network.listeners.impl.WorkerNodeConnector;
@@ -15,6 +15,7 @@ public class WorkerNodeComponent implements NodeComponent {
 	/* To write result */
 	private SocketChannel channel = null;
 	/* To read result */
+	private Thread workerThread = null;
 	private WorkerNodeConnector connector = null;
 	private final WorkerMessageListener workerMessagelistener;
 
@@ -31,14 +32,16 @@ public class WorkerNodeComponent implements NodeComponent {
 	public void connect() {
 		connector = new WorkerNodeConnector(workerMessagelistener);
 		connector.init(networkNodeBean.getIpAddress(), networkNodeBean.getPort());
-		connector.start();
+		workerThread = new Thread(connector);
+		workerThread.start();
+		runDataPushThread();
 	}
 
 	@Override
 	public boolean sendMessage(String message) {
-		if ( !channel.isConnected() ) return false;
+		if ( channel ==null || !channel.isConnected() ) return false;
 		try {
-			byte[] byteData = Charset.forName("UTF-8").encode(message).array();
+			byte[] byteData = AppConstants.SOCKET_CHAR_SET.encode(message).array();
 			ByteBuffer data = ByteBuffer.wrap(byteData);
 			channel.write(data);
 			return true;
@@ -49,6 +52,35 @@ public class WorkerNodeComponent implements NodeComponent {
 	@Override
 	public void setChannel(SocketChannel channel) {
 		this.channel = channel;
-	}	
+	}
+
+	@Override
+	public void stopListener() {
+		if ( connector != null )
+			connector.stopListener();
+		
+		if ( workerThread != null ) {
+			workerThread.interrupt();
+			workerThread = null;
+		}
+	}
+	
+	private void runDataPushThread() {
+		Thread runnable = new Thread() {
+			
+			@Override
+			public void run() {
+				while ( true ) {
+					System.out.println("Now Push data to another end");
+					sendMessage("Push data");
+					try {
+						sleep(60000);
+					} catch (InterruptedException e) {}
+				}
+			}
+		};
+		runnable.start();
+	}
+
 
 }

@@ -48,6 +48,12 @@ public class SocketNetworkComponent implements NetworkMessageListener {
 					NetworkNodeBean.class);
 			System.out.println("WORKER_NODE_CON_REQ Received");
 			workerNodeContainer.addWorkerNode(nodeBean, channel);
+		} else if ( message.getType().equals(AppConstants.WORKER_NODE_CON_RES) ) {
+			System.out.println("Connection from Master");
+			/* Now update our */
+			NetworkNodeBean nodeBean = JsonUtils.createObjectFromTree(message.getData(),
+					NetworkNodeBean.class);
+			workerNodeContainer.setWorkerWriter(nodeBean, channel);
 		}
 	}
 
