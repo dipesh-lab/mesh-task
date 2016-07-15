@@ -14,6 +14,7 @@ import com.meshtasks.constants.AppConstants;
 import com.meshtasks.metadata.beans.MessageBean;
 import com.meshtasks.metadata.beans.NetworkNodeBean;
 import com.meshtasks.network.listeners.WorkerMessageListener;
+import com.meshtasks.utils.CommonUtils;
 import com.meshtasks.utils.JsonUtils;
 
 public class WorkerNodeConnector implements Runnable {
@@ -23,6 +24,8 @@ public class WorkerNodeConnector implements Runnable {
 	private final WorkerMessageListener listener;
 	private AppConfiguration configuration = AppConfiguration.getInstance();
 	private boolean connected = false;
+	private String host = null;
+	private String port = null;
 	
 	public WorkerNodeConnector(WorkerMessageListener l) {
 		listener = l;
@@ -30,6 +33,8 @@ public class WorkerNodeConnector implements Runnable {
 	
 	public void init(String hostAddress, String port) {
 		System.out.println("Create Node Connection. Host "+hostAddress +" Port "+port);
+		host=hostAddress;
+		this.port = port;
 		try {
 			channel = SocketChannel.open(new InetSocketAddress(hostAddress, Integer.parseInt(port)));
 			channel.configureBlocking(false);
@@ -42,8 +47,11 @@ public class WorkerNodeConnector implements Runnable {
 				bean.setType(AppConstants.WORKER_NODE_CON_RES);
 			}
 			NetworkNodeBean nodeBean = new NetworkNodeBean();
-			nodeBean.setIpAddress(hostAddress);
-			nodeBean.setPort(port);
+			nodeBean.setIpAddress(CommonUtils.getLocalIpAddress());
+			nodeBean.setPort(configuration.getSocketPort()+"");
+			if ( configuration.getApplicationMode().equals(AppConstants.MASTER_MODE) ) {
+				nodeBean.setMaster(true);
+			}
 			bean.setData(nodeBean);
 			String jsonData = JsonUtils.createJSONDataFromObject(bean);
 			ByteBuffer buffer = ByteBuffer.wrap(jsonData.getBytes());
@@ -59,7 +67,7 @@ public class WorkerNodeConnector implements Runnable {
 		try {
 			Selector selector = Selector.open();
 			channel.register(selector, SelectionKey.OP_READ);
-			System.out.println("App Mode "+ configuration.getApplicationMode() +" WorkerNodeConnector started listening");
+			System.out.println("WorkerNodeConnector started listening on "+host+" > "+this.port);
 			while (connected) {
 				selector.selectNow();
 					Iterator<SelectionKey> keys = selector.selectedKeys()

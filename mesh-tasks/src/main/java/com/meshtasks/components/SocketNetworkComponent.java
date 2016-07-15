@@ -31,11 +31,10 @@ public class SocketNetworkComponent implements NetworkMessageListener {
 	
 	@Override
 	public void messageReceived(String data, SocketChannel channel) {
-		System.out.println("App Mode "+configuration.getApplicationMode()+" : Socket Message Received\n"+data);
+		//System.out.println("App Mode "+configuration.getApplicationMode()+" : Socket Message Received\n"+data);
 		if ( CommonUtils.isEmpty(data) ) return;
 		MessageBean message = JsonUtils.createObjectFromJsonData(data, MessageBean.class);
 		if ( message.getType().equals(AppConstants.FIND_MASTER_RES) ) {
-			System.out.println("FIND_MASTER_RES Received");
 			NetworkNodeBean nodeBean = JsonUtils.createObjectFromTree(message.getData(),
 					NetworkNodeBean.class);
 			System.out.println("Socket message received. Master "+nodeBean.getIpAddress()+" : "+nodeBean.getPort()+" Is Master? "+nodeBean.isMaster());
@@ -46,10 +45,8 @@ public class SocketNetworkComponent implements NetworkMessageListener {
 		} else if ( message.getType().equals(AppConstants.WORKER_NODE_CON_REQ) ) {
 			NetworkNodeBean nodeBean = JsonUtils.createObjectFromTree(message.getData(),
 					NetworkNodeBean.class);
-			System.out.println("WORKER_NODE_CON_REQ Received");
 			workerNodeContainer.addWorkerNode(nodeBean, channel);
 		} else if ( message.getType().equals(AppConstants.WORKER_NODE_CON_RES) ) {
-			System.out.println("Connection from Master");
 			/* Now update our */
 			NetworkNodeBean nodeBean = JsonUtils.createObjectFromTree(message.getData(),
 					NetworkNodeBean.class);

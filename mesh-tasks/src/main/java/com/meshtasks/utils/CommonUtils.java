@@ -95,4 +95,11 @@ public class CommonUtils {
         return false;
 	}
 
+    public static String getLocalIpAddress() {
+    	String ipAddress = null;
+    	try {
+    		ipAddress = InetAddress.getLocalHost().getHostAddress();
+    	} catch(IOException ioe){}
+    	return ipAddress;
+    }
 }
