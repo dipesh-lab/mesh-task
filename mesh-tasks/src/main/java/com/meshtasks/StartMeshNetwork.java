@@ -2,7 +2,6 @@ package com.meshtasks;
 
 
 public class StartMeshNetwork {
-
 	public static void main(String[] arg) {
 		/*
 		 * 1. Send multicast message in network.
@@ -12,5 +11,4 @@ public class StartMeshNetwork {
 		BootstrapApplication app = new BootstrapApplication();
 		app.start();
 	}
-
 }

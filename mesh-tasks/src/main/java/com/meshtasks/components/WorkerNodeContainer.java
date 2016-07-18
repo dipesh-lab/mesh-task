@@ -43,14 +43,9 @@ public class WorkerNodeContainer {
 		workerComponent.setNetworkBean(nodeBean);
 		workerComponent.connect();
 	}
-	
+
 	public void setWorkerWriter(NetworkNodeBean nodeBean, SocketChannel channel) {
 		workerComponent.setChannel(channel);
-		/*WorkerNodeComponent component = nodeMap.get(nodeBean);
-		if ( component != null ) {
-			System.out.println("setWorkerWriter updated");
-			component.setChannel(channel);
-		}*/
 	}
 
 }

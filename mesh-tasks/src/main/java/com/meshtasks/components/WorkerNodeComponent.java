@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.meshtasks.config.AppConfiguration;
 import com.meshtasks.constants.AppConstants;
 import com.meshtasks.metadata.beans.NetworkNodeBean;
 import com.meshtasks.network.listeners.WorkerMessageListener;
@@ -20,6 +21,7 @@ public class WorkerNodeComponent implements NodeComponent {
 	private WorkerNodeConnector connector = null;
 	private final WorkerMessageListener workerMessagelistener;
 	private volatile AtomicInteger messageCounter = new AtomicInteger(0);
+	private AppConfiguration configuration = AppConfiguration.getInstance();
 	
 	public WorkerNodeComponent(WorkerMessageListener listener) {
 		workerMessagelistener = listener;
@@ -72,10 +74,10 @@ public class WorkerNodeComponent implements NodeComponent {
 			@Override
 			public void run() {
 				while ( true ) {
-					String msg = "Push data "+messageCounter.incrementAndGet();
+					String msg = "Push data = "+configuration.getSocketPort()+" = "+messageCounter.incrementAndGet();
 					sendMessage(msg);
 					try {
-						sleep(60000);
+						sleep(10000);
 					} catch (InterruptedException e) {}
 				}
 			}
