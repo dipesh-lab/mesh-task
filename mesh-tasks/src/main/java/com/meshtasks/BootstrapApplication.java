@@ -4,6 +4,8 @@ import com.meshtasks.components.MulticastNetworkComponent;
 import com.meshtasks.components.SocketNetworkComponent;
 import com.meshtasks.components.WorkerNodeContainer;
 import com.meshtasks.config.AppConfiguration;
+import com.meshtasks.system.TaskClassLoader;
+import com.meshtasks.system.TaskObjectFactory;
 
 public class BootstrapApplication {
 
@@ -17,7 +19,7 @@ public class BootstrapApplication {
 		MulticastNetworkComponent multicastNetworkComponent = new MulticastNetworkComponent();
 		multicastNetworkComponent.sendHandshakMessage();
 		try {
-			Thread.currentThread().sleep(20000);
+			Thread.currentThread().sleep(10000);
 		} catch (InterruptedException e) {}
 		// Check for received message
 		AppConfiguration configuration = AppConfiguration.getInstance();
@@ -28,8 +30,10 @@ public class BootstrapApplication {
 			*/
 			configuration.setApplicationMode("master");
 			/* Create connection to self to process the tasks */
-			//workerNodeComponent.runDataPushThread();
 		}
 		System.out.println("System Mode "+configuration.getApplicationMode());
+		/* Create Classloader for tasks */
+		TaskObjectFactory taskObjectFactory = TaskObjectFactory.getInstance();
+		
 	}
 }

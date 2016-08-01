@@ -12,6 +12,10 @@ public class AppConstants {
 	
 	public static final String WORKER_NODE_CON_RES = "nodeConRes";
 	
+	public static final String TASK_DATA_REQ = "taskDataReq";
+	
+	public static final String NODE_TASK_DATA_REQ = "nodeTaskDataReq";
+	
 	public static final String MASTER_MODE = "master";
 	
 	public static final String CLIENT_MODE = "client";

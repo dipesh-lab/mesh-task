@@ -3,9 +3,7 @@ package com.meshtasks.components;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import com.meshtasks.config.AppConfiguration;
 import com.meshtasks.constants.AppConstants;
 import com.meshtasks.metadata.beans.NetworkNodeBean;
 import com.meshtasks.network.listeners.WorkerMessageListener;
@@ -20,8 +18,6 @@ public class WorkerNodeComponent implements NodeComponent {
 	private Thread workerThread = null;
 	private WorkerNodeConnector connector = null;
 	private final WorkerMessageListener workerMessagelistener;
-	private volatile AtomicInteger messageCounter = new AtomicInteger(0);
-	private AppConfiguration configuration = AppConfiguration.getInstance();
 	
 	public WorkerNodeComponent(WorkerMessageListener listener) {
 		workerMessagelistener = listener;
@@ -38,7 +34,6 @@ public class WorkerNodeComponent implements NodeComponent {
 		connector.init(networkNodeBean.getIpAddress(), networkNodeBean.getPort());
 		workerThread = new Thread(connector);
 		workerThread.start();
-		runDataPushThread();
 	}
 
 	@Override
@@ -69,7 +64,20 @@ public class WorkerNodeComponent implements NodeComponent {
 		}
 	}
 	
-	private void runDataPushThread() {
+	private Runnable connectionCheck() {
+		Runnable runnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				while ( channel.isConnected() ) {
+					
+				}
+			}
+		};
+		return runnable;
+	}
+	
+	/*private void runDataPushThread() {
 		Thread runnable = new Thread() {
 			@Override
 			public void run() {
@@ -83,7 +91,6 @@ public class WorkerNodeComponent implements NodeComponent {
 			}
 		};
 		runnable.start();
-	}
-
+	}*/
 
 }

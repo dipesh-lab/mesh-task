@@ -1,6 +1,10 @@
 package com.meshtasks.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -102,4 +106,67 @@ public class CommonUtils {
     	} catch(IOException ioe){}
     	return ipAddress;
     }
+    
+    public static byte[] getFileData( String path ) {
+    	byte[] data = null;
+    	FileInputStream inStream = null;
+    	try {
+    		inStream = new FileInputStream(new File(path));
+    		data = new byte[inStream.available()];
+    		byte[] chunk = new byte[512];
+    		int totalRead = -1;
+    		int counter = 0;
+    		while ( (totalRead = inStream.read(chunk)) != -1 ) {
+    			System.arraycopy(chunk, 0, data, counter, totalRead);
+    			counter += totalRead;
+    		}
+    		return data;
+    	} catch(IOException ioe) {
+    	} finally {
+    		try {
+    			inStream.close();
+    		} catch(IOException ioe){}
+    	}
+    	return null;
+    }
+    
+    public static void writeFile(String path, String fileName, String content) {
+    	File dirFile = new File(path);
+    	if (!dirFile.exists()) dirFile.mkdirs();
+    	
+    	FileOutputStream outStream = null;
+    	try {
+    		outStream = new FileOutputStream(dirFile.getAbsolutePath() + File.separator + fileName );
+    		outStream.write(content.getBytes());
+    	} catch( IOException ioe ) {
+    		ioe.printStackTrace();
+    	} finally {
+    		try {
+    			outStream.flush();
+    			outStream.close();
+    		} catch(IOException ioe){}
+    	}
+    }
+    
+    public static byte[] readInputStream(InputStream inStream) {
+    	byte[] data = null;
+    	byte[] chunk = new byte[512];
+        int counter = 0;
+        int totalRead = -1;
+        try {
+        	int readBytes = inStream.available();
+        	System.out.println("Read from Stream "+readBytes);
+        	data = new byte[readBytes];
+        	System.out.println("");
+			while ( (totalRead = inStream.read(chunk)) != -1 ) {
+				System.arraycopy(chunk, 0, data, counter, totalRead);
+    			counter += totalRead;
+			}
+			return data;
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
+    	return null;
+    }
+
 }
